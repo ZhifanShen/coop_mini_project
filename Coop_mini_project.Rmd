@@ -1,0 +1,51 @@
+---
+title: "Coop-mini-project"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r eval=FALSE}
+#First Method
+#Read HTML
+page = readLines("520.html")
+#Job Title
+test = grep("<span title=",page,value = T)
+test1 = gsub(".*=","",test)
+test2 = gsub(".*[[:digit:]]{2}[[:space:]]","",test1)
+test3 = gsub('\\\">',"",test2)
+test4 = gsub("- ","",test3)
+#location
+indexoriginal = grep("td-text-center blacklistColumn",page)
+index = indexoriginal-15
+location = page[index]
+location1 = gsub(".*<td>","",location)
+location2 = gsub("</td>","",location1)
+#Make into data frame
+coop = data.frame(Title = test4,Location = location2)
+coop1 = coop[coop$Location == "Vancouver",]
+
+library(xlsx) # export table to excel
+
+write.xlsx(coop1,"/cloud/project/coop.xlsx")
+```
+
+```{r}
+#Second Method
+library (plyr) #for ldply : convert list into data frame
+library(rvest)
+library(XML) #for readHTMLTable
+out = readHTMLTable("SFU myExperience - MyAccount - Exp. Learning (Co-op) - Job Postings.html")[3]
+out1 = ldply(out,data.frame)
+step1 = gsub(".*=","",out1$X...............Job.Title.............)
+step2 = gsub(".*[[:digit:]]{2}[[:space:]]","",step1)
+step3 = gsub('\\\">',"",step2)
+step4 = gsub("- ","",step3)
+coopmethod_2 = data.frame(Title = step4 , Location = out1$X.................Location...............)
+#coopmethod_2 = coopmethod_2[coopmethod_2$Location == "Vancouver",]
+#write.xlsx(coopmethod_2,"/cloud/project/coopmethod_2.xlsx")
+```
+
+
